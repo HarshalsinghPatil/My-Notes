@@ -1,0 +1,190 @@
+	
+
+		React + Asp dotnet core webapi => using visual studio 2022 
+
+
+
+
+
+
+
+// // Http verbs
+
+			get, put, delete,post
+
+		get=> fetch the data
+		put => update data
+		delete=> 
+		post => to add something new to database
+
+
+/// 
+
+
+=============================================================================================================================
+How to set up database 
+1. Go to appsettings.json and add connection string
+,
+"ConnectionStrings": {
+    "DefaultConnection": "Server=(localdb)\\mssqllocaldb;Database=customer_db;Trusted_Connection=True;MultipleActiveResultSets=true"
+  }
+
+2. Add ApplicationDbContextClass
+public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
+            : base(options)
+        {
+        }
+
+3. program.cs file
+builder.Services.AddDbContext<ApplicationDbContext>(options
+    => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+=============================================================================================================================
+
+Customer.cs
+
+    public class Customer
+    {
+        [Key]
+        public int Id { get; set; }
+        [MaxLength(30)]
+        public string FirstName { get; set; } = "";
+
+        [MaxLength(30)]
+        public string LastName { get; set; } = "";
+
+        [MaxLength(10)]
+        public string PhoneNo { get; set; } = "";
+        [EmailAddress]
+        [MaxLength(45)]
+        public string EmailId { get; set; } = "";
+
+}
+======================================================================================================================
+
+
+	[Route("api/[controller]")]
+    [ApiController]
+    public class CustomerController : ControllerBase
+    {
+        private readonly ApiDbContext db;
+
+        public CustomerController(ApiDbContext context)
+        {
+            db = context;
+        }
+
+        [HttpGet]
+        public async Task<ActionResult<List<Customer>>> GetCustomer()
+        {
+            return Ok(await db.Customers.ToListAsync());
+        }
+
+
+        [HttpGet("{id}")]
+        public  ActionResult<Customer> GetCustomer(int id)
+        {
+            var customer = db.Customers.Find(id);
+            if(customer == null)
+            {
+                return NotFound();
+            }
+            return customer;
+        }
+
+        [HttpPost]
+        public async Task<ActionResult<Customer>> Create(Customer customer)
+        {
+            db.Add(customer);
+            await db.SaveChangesAsync();
+            return Ok(customer);
+        }
+
+        //In MVC Generally we have Edit(get) and Edit(post) method but here instead of edit get we use Getcustomer(by id)
+        [HttpPut("{id}")]
+        public async Task<ActionResult> Update(int id, Customer customer)
+        {
+            if (id != customer.Id)
+                return BadRequest();
+            db.Entry(customer).State = EntityState.Modified;
+            await db.SaveChangesAsync();
+
+            return Ok();
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            var customer = await db.Customers.FindAsync(id);
+            if (customer == null)
+            {
+                return NotFound("Incorrect customer id");
+            }
+
+            db.Customers.Remove(customer);
+            await db.SaveChangesAsync();
+
+            return Ok();
+        }
+    }
+
+
+	public class Customer
+    {
+        [Key]
+        public int Id { get; set; }
+        [StringLength(75)]
+        public string FirstName { get; set; } = "";
+
+        [StringLength(75)]
+        public string LastName { get; set; } = "";
+
+        [StringLength(75)]
+        public string PhoneNo { get; set; } = "";
+        [StringLength(75)]
+        public string EmailId { get; set; } = "";
+
+
+    }
+
+===========================================================================================================================
+00:00: what is api
+02:00: http verbs
+05:00: create a api project
+10:00: diff types of http codes
+
+11:20: database connection and 
+15:20: installing nuget packages
+25:55: attributes/annotations
+29:28 : Adding migrations
+34:20: Creating APIs
+53:51: Checking APIs using swagger
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
