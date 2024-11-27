@@ -81,7 +81,7 @@ Customer.cs
         }
 
 
-        [HttpGet("{id}")]
+        [HttpGet("{id}", Name = "GetCustomerById")]
         public  ActionResult<Customer> GetCustomer(int id)
         {
             var customer = db.Customers.Find(id);
@@ -92,7 +92,7 @@ Customer.cs
             return customer;
         }
 
-        [HttpPost]
+        [HttpPost(Name = "CreateCustomer")]
         public async Task<ActionResult<Customer>> Create(Customer customer)
         {
             db.Add(customer);
